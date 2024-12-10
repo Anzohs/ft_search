@@ -1,34 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hcreate.c                                          :+:      :+:    :+:   */
+/*   hdestroy.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hladeiro <hladeiro@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/10 13:55:04 by hladeiro          #+#    #+#             */
-/*   Updated: 2024/12/10 13:55:05 by hladeiro         ###   ########.fr       */
+/*   Created: 2024/12/10 13:55:15 by hladeiro          #+#    #+#             */
+/*   Updated: 2024/12/10 13:55:16 by hladeiro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_search.h"
 
-t_hash	*hcreate(size_t nel)
+static void	free_n(t_node *node)
 {
-	t_hash	*hash;
-	size_t	l;
+	t_node	*temp;
 
-	hash = ft_calloc(sizeof(t_hash), nel);
-	if (!hash)
-		return (NULL);
-	hash->node = (t_node **)ft_calloc(sizeof(t_node *), nel);
-	if (!hash->node)
+	if (!node)
+		return ;
+	while (node->next)
 	{
-		free(hash);
-		return (NULL);
+		temp = node->next;
+		free(node->entry.key);
+		free(node->entry.value);
+		free(node);
+		node = temp;
 	}
-	l = 0;
-	while (l < nel)
-		hash->node[l++] = NULL;
-	hash->len = nel;
-	return (hash);
+	free(node->entry.key);
+	free(node->entry.value);
+	free(node);
+}
+
+void	hdestroy(t_hash *ht)
+{
+	size_t	len;
+
+	if (!ht)
+		return ;
+	len = -1;
+	while (++len < ht->len)
+		free_n(ht->node[len]);
+	free(ht->node);
+	free(ht);
 }
